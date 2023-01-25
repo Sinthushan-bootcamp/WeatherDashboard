@@ -16,8 +16,26 @@ function getCityCoordinates() {
 }
 
 function getWeatherData(coordinates) {
-    var requestUrl = 'https://api.openweathermap.org/data/2.5/forecast?lat='+ coordinates.lat +'&lon='+ coordinates.lon +'&appid='+ APIKEY +'&units=metric';
-    fetch(requestUrl)
+    var currentUrl = 'https://api.openweathermap.org/data/2.5/weather?lat='+ coordinates.lat +'&lon='+ coordinates.lon +'&appid='+ APIKEY +'&units=metric';
+    var forecastUrl = 'https://api.openweathermap.org/data/2.5/forecast?lat='+ coordinates.lat +'&lon='+ coordinates.lon +'&appid='+ APIKEY +'&units=metric';
+    
+    fetch(currentUrl)
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        currentWeather = {
+          date: '', 
+          temp: data.main.temp,
+          humidity: data.main.humidity,
+          wind: data.wind.speed,
+          icon: data.weather[0].icon
+        }
+        console.log(currentWeather)
+      });
+    
+  
+    fetch(forecastUrl)
       .then(function (response) {
         return response.json();
       })
