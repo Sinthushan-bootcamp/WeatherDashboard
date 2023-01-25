@@ -14,24 +14,30 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="min-vh-100 d-flex">
+    <main class="min-vh-100 d-flex">
         <div class="w-100 row justify-content-center my-3">
-            <div class="col-12 col-lg-3 bg-info bg-gradient rounded mx-3">
+            <section class="col-12 col-lg-3 bg-info bg-gradient rounded mx-3">
                 <div class="input-group input-group-lg my-3">
                     <input id="searchInput" type="text" class="form-control" placeholder="Enter Name of City" >
                     <button id ="searchButton" type="button" class="btn btn-outline-light">Search</button>
                 </div>
 
                 <h2 class="text-white">Past Searches</h2>
-                <ul>
+                <ul id="pastSearches">
 
                 </ul>
-            </div>
-            <div class="col-12 col-lg-8 text-center bg-info bg-gradient rounded">
+            </section>
+            <section class="col-12 col-lg-8 text-center bg-info bg-gradient rounded">
                 <h1 class="text-white">Weather Dashboard</h1>
-            </div>
+                <article id="currentWeather">
+
+                </article>
+                <article id="forecast">
+
+                </article>
+            </section>
         </div>
-    </div>
+    </main>
 </body>
 <script src="./assets/js/script.js"></script>
 </html>
