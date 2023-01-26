@@ -1,9 +1,55 @@
-var APIKEY = 'e4674172eca777d00a7f445d19b450a9'
-var searchButton = document.getElementById('searchButton')
-var searchInput = document.getElementById('searchInput')
-var weather = []
+var APIKEY = 'e4674172eca777d00a7f445d19b450a9';
+var searchButton = $('#searchButton');
+var searchInput = $('#searchInput');
+var forecast = $('#forecast');
+
+
+function createForecastCards(weather) {
+    var cardEL = $('<div>');
+    cardEL.addClass('card');
+    cardEL.addClass('w-25');
+    cardEL.addClass('m-2');
+    cardEL.appendTo(forecast);
+    var cardName = $('<h5>').addClass('card-header custom-card-header').text(weather.date);
+    cardName.appendTo(cardEL);
+    cardImage = $('<img>')
+    cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png')
+    cardImage.appendTo(cardEL);
+    var cardBodyEL = $('<div>');
+    cardBodyEL.addClass('card-body');
+    cardBodyEL.appendTo(cardEL);
+    var cardComment = $('<p>').addClass('card-text').text('Temp: ' + weather.temp);
+    cardComment.appendTo(cardBodyEL);
+    var cardComment = $('<p>').addClass('card-text').text('Wind: ' + weather.wind);
+    cardComment.appendTo(cardBodyEL);
+    var cardComment = $('<p>').addClass('card-text').text('Humidity: ' + weather.humidity);
+    cardComment.appendTo(cardBodyEL);
+}
+
+function createCurrentCard(weather){
+  var cardEL = $('<div>');
+  cardEL.addClass('card');
+  cardEL.appendTo(current);
+  var cardName = $('<h5>').addClass('card-header custom-card-header').text(weather.date);
+  cardName.appendTo(cardEL);
+  cardImage = $('<img>')
+  cardImage.addClass('w-2')
+  cardImage.addClass('h-3')
+  cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png')
+  cardImage.appendTo(cardEL);
+  var cardBodyEL = $('<div>');
+  cardBodyEL.addClass('card-body');
+  cardBodyEL.appendTo(cardEL);
+  var cardComment = $('<p>').addClass('card-text').text('Temp: ' + weather.temp);
+  cardComment.appendTo(cardBodyEL);
+  var cardComment = $('<p>').addClass('card-text').text('Wind: ' + weather.wind);
+  cardComment.appendTo(cardBodyEL);
+  var cardComment = $('<p>').addClass('card-text').text('Humidity: ' + weather.humidity);
+  cardComment.appendTo(cardBodyEL);
+}
+
 function getCityCoordinates() {
-    var city = searchInput.value
+    var city = searchInput.val();
     var requestUrl = 'http://api.openweathermap.org/geo/1.0/direct?q='+ city +'&appid='+ APIKEY;
     fetch(requestUrl)
       .then(function (response) {
@@ -25,13 +71,13 @@ function getWeatherData(coordinates) {
       })
       .then(function (data) {
         currentWeather = {
-          date: '', 
+          date: dayjs().format('M/D/YYYY'), 
           temp: data.main.temp,
           humidity: data.main.humidity,
           wind: data.wind.speed,
           icon: data.weather[0].icon
         }
-        console.log(currentWeather)
+        createCurrentCard(currentWeather)
       });
     
   
@@ -43,18 +89,19 @@ function getWeatherData(coordinates) {
         forecastData = data.list
         for (var i = 0; i < forecastData.length; i++) {
             if (forecastData[i].dt_txt.split(" ")[1] === '12:00:00'){
-                weather.push(
+              var weather = 
                     {
                         date: forecastData[i].dt_txt.split(" ")[0], 
                         temp: forecastData[i].main.temp,
                         humidity: forecastData[i].main.humidity,
                         wind: forecastData[i].wind.speed,
                         icon: forecastData[i].weather[0].icon
-                    });
+                    };
+              console.log(weather);
+              createForecastCards(weather)
             }
         }
-        console.log(weather)
       });
 }
 
-searchButton.addEventListener('click', getCityCoordinates);
+searchButton.on('click', getCityCoordinates);
