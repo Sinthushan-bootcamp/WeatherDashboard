@@ -2,6 +2,8 @@ var APIKEY = 'e4674172eca777d00a7f445d19b450a9';
 var searchButton = $('#searchButton');
 var searchInput = $('#searchInput');
 var forecast = $('#forecast');
+var pastSearches = $('#pastSearches');
+var searches = [];
 
 function clearCards() {
   var cards = $('.card');
@@ -55,18 +57,68 @@ function createCurrentCard(weather){
   cardComment.appendTo(cardBodyText);
 }
 
-function getCityCoordinates() {
-    clearCards()
-    var city = searchInput.val();
-    var requestUrl = 'http://api.openweathermap.org/geo/1.0/direct?q='+ city +'&appid='+ APIKEY;
-    fetch(requestUrl)
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (data) {
-        coordinates = {lat: data[0].lat, lon: data[0].lon};
-        getWeatherData(city, coordinates);
-      });
+function initSearches(){
+  var storedSearches = JSON.parse(localStorage.getItem("pastSearches")); //get all stored searches from the localStorage
+  if (storedSearches !== null) {
+      for (var i = 0; i < storedSearches.length; i++) {
+        createQuickSearchButton(storedSearches[i])
+      }
+      searches =  storedSearches; 
+  }
+}
+
+function wasSearched(city){
+  for(var i = 0; i < searches.length; i++) {
+    if (searches[i].city.toUpperCase() === city.toUpperCase()){
+      return searches[i];
+    }
+  }
+  return false;
+}
+
+function createQuickSearchButton(search){
+  var pastSearch = $('<li>');
+  var pastSearchButton = $('<button>')
+  pastSearchButton.text(search.city)
+  pastSearchButton.attr('data-lat', search.coordinates.lat)
+  pastSearchButton.attr('data-lon', search.coordinates.lon)
+  pastSearchButton.addClass('pastSearchButton');
+  pastSearchButton.appendTo(pastSearch)
+  pastSearch.appendTo(pastSearches)
+}
+
+function startPastSearch(event){
+  buttonClicked = $(event.target);
+  searchInput.val(buttonClicked.text());
+  startSearch();
+}
+
+function startSearch(){
+  clearCards()
+  var city = searchInput.val();
+  var previousSearch = wasSearched(city)
+  if (previousSearch){
+    getWeatherData(previousSearch.city, previousSearch.coordinates)
+  } else {
+    getCityCoordinates(city)
+  }
+}
+
+function getCityCoordinates(city) {
+  var requestUrl = 'http://api.openweathermap.org/geo/1.0/direct?q='+ city +'&appid='+ APIKEY;
+  fetch(requestUrl)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      coordinates = {lat: data[0].lat, lon: data[0].lon};
+      search = {city: city, coordinates: coordinates}
+      console.log('here');
+      createQuickSearchButton(search)
+      searches.push(search);
+      localStorage.setItem('pastSearches', JSON.stringify(searches));
+      getWeatherData(city, coordinates);
+    });
 }
 
 function getWeatherData(city, coordinates) {
@@ -106,11 +158,12 @@ function getWeatherData(city, coordinates) {
                         wind: forecastData[i].wind.speed,
                         icon: forecastData[i].weather[0].icon
                     };
-              console.log(weather);
               createForecastCards(weather)
             }
         }
       });
 }
 
-searchButton.on('click', getCityCoordinates);
+window.addEventListener("load", initSearches);
+searchButton.on('click', startSearch);
+pastSearches.on('click', '.pastSearchButton', startPastSearch);
