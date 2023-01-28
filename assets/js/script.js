@@ -3,52 +3,60 @@ var searchButton = $('#searchButton');
 var searchInput = $('#searchInput');
 var forecast = $('#forecast');
 
+function clearCards() {
+  var cards = $('.card');
+  cards.remove();
+}
 
 function createForecastCards(weather) {
     var cardEL = $('<div>');
-    cardEL.addClass('card');
-    cardEL.addClass('w-25');
-    cardEL.addClass('m-2');
+    cardEL.addClass('card text-white bg-info w-lg-25 m-2');
     cardEL.appendTo(forecast);
-    var cardName = $('<h5>').addClass('card-header custom-card-header').text(weather.date);
+    var cardName = $('<h5>').addClass('card-title').text(weather.date).css("padding","1rem");
     cardName.appendTo(cardEL);
-    cardImage = $('<img>')
+    var cardImage = $('<img>')
     cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png')
     cardImage.appendTo(cardEL);
     var cardBodyEL = $('<div>');
     cardBodyEL.addClass('card-body');
     cardBodyEL.appendTo(cardEL);
-    var cardComment = $('<p>').addClass('card-text').text('Temp: ' + weather.temp);
+    var cardComment = $('<p>').addClass('card-text').text('Temp: ' + weather.temp + '℃');
     cardComment.appendTo(cardBodyEL);
-    var cardComment = $('<p>').addClass('card-text').text('Wind: ' + weather.wind);
+    var cardComment = $('<p>').addClass('card-text').text('Wind: ' + weather.wind + ' Meters/Sec');
     cardComment.appendTo(cardBodyEL);
-    var cardComment = $('<p>').addClass('card-text').text('Humidity: ' + weather.humidity);
+    var cardComment = $('<p>').addClass('card-text').text('Humidity: ' + weather.humidity + '%');
     cardComment.appendTo(cardBodyEL);
 }
 
 function createCurrentCard(weather){
   var cardEL = $('<div>');
-  cardEL.addClass('card');
+  cardEL.addClass('card text-white bg-info');;
   cardEL.appendTo(current);
-  var cardName = $('<h5>').addClass('card-header custom-card-header').text(weather.date);
+  
+  var cardName = $('<h2>').addClass('card-title').text(weather.city + " - " + weather.date).css("padding","1rem");
   cardName.appendTo(cardEL);
-  cardImage = $('<img>')
-  cardImage.addClass('w-2')
-  cardImage.addClass('h-3')
-  cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png')
-  cardImage.appendTo(cardEL);
+ 
   var cardBodyEL = $('<div>');
-  cardBodyEL.addClass('card-body');
+  cardBodyEL.addClass('card-body d-flex flex-column flex-lg-row');
   cardBodyEL.appendTo(cardEL);
-  var cardComment = $('<p>').addClass('card-text').text('Temp: ' + weather.temp);
-  cardComment.appendTo(cardBodyEL);
-  var cardComment = $('<p>').addClass('card-text').text('Wind: ' + weather.wind);
-  cardComment.appendTo(cardBodyEL);
-  var cardComment = $('<p>').addClass('card-text').text('Humidity: ' + weather.humidity);
-  cardComment.appendTo(cardBodyEL);
+
+  var cardImage = $('<img>')
+  cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png').css({"width":"20rem", "height":"15rem"});
+  cardImage.appendTo(cardBodyEL);
+  
+  var cardBodyText = $('<div>');
+  cardBodyText.appendTo(cardBodyEL);
+
+  var cardComment = $('<p>').addClass('card-text fs-1').text('Temp: ' + weather.temp + '℃');
+  cardComment.appendTo(cardBodyText);
+  var cardComment = $('<p>').addClass('card-text fs-1').text('Wind: ' + weather.wind + ' Meters/Sec');
+  cardComment.appendTo(cardBodyText);
+  var cardComment = $('<p>').addClass('card-text fs-1').text('Humidity: ' + weather.humidity + '%');
+  cardComment.appendTo(cardBodyText);
 }
 
 function getCityCoordinates() {
+    clearCards()
     var city = searchInput.val();
     var requestUrl = 'http://api.openweathermap.org/geo/1.0/direct?q='+ city +'&appid='+ APIKEY;
     fetch(requestUrl)
@@ -57,11 +65,11 @@ function getCityCoordinates() {
       })
       .then(function (data) {
         coordinates = {lat: data[0].lat, lon: data[0].lon};
-        getWeatherData(coordinates);
+        getWeatherData(city, coordinates);
       });
 }
 
-function getWeatherData(coordinates) {
+function getWeatherData(city, coordinates) {
     var currentUrl = 'https://api.openweathermap.org/data/2.5/weather?lat='+ coordinates.lat +'&lon='+ coordinates.lon +'&appid='+ APIKEY +'&units=metric';
     var forecastUrl = 'https://api.openweathermap.org/data/2.5/forecast?lat='+ coordinates.lat +'&lon='+ coordinates.lon +'&appid='+ APIKEY +'&units=metric';
     
@@ -71,6 +79,7 @@ function getWeatherData(coordinates) {
       })
       .then(function (data) {
         currentWeather = {
+          city: city,
           date: dayjs().format('M/D/YYYY'), 
           temp: data.main.temp,
           humidity: data.main.humidity,
@@ -91,7 +100,7 @@ function getWeatherData(coordinates) {
             if (forecastData[i].dt_txt.split(" ")[1] === '12:00:00'){
               var weather = 
                     {
-                        date: forecastData[i].dt_txt.split(" ")[0], 
+                        date: dayjs(forecastData[i].dt_txt.split(" ")[0]).format('M/D/YYYY'), 
                         temp: forecastData[i].main.temp,
                         humidity: forecastData[i].main.humidity,
                         wind: forecastData[i].wind.speed,
