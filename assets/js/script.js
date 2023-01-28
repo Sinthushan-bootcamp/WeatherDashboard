@@ -96,7 +96,7 @@ function startPastSearch(event){
 
 function startSearch(){
   clearCards()
-  forecastTitle.text('5 Day Forecast')
+  forecastTitle.text('').removeClass()
   var city = searchInput.val();
   var previousSearch = wasSearched(city)
   if (previousSearch){
@@ -108,62 +108,72 @@ function startSearch(){
 
 function getCityCoordinates(city) {
   var requestUrl = 'http://api.openweathermap.org/geo/1.0/direct?q='+ city +'&appid='+ APIKEY;
-  fetch(requestUrl)
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      coordinates = {lat: data[0].lat, lon: data[0].lon};
-      search = {city: city, coordinates: coordinates}
-      console.log('here');
-      createQuickSearchButton(search)
-      searches.push(search);
-      localStorage.setItem('pastSearches', JSON.stringify(searches));
-      getWeatherData(city, coordinates);
-    });
+
+  fetch(requestUrl).then(function (response) {
+    if (response.ok) {
+      response.json().then(function (data) {
+        if (data.length) {
+          coordinates = {lat: data[0].lat, lon: data[0].lon};
+          search = {city: city, coordinates: coordinates}
+          console.log('here');
+          createQuickSearchButton(search)
+          searches.push(search);
+          localStorage.setItem('pastSearches', JSON.stringify(searches));
+          getWeatherData(city, coordinates);
+        } else {
+          forecastTitle.text('The searched city is not available').addClass('mt-3 text-danger text-center')
+        }
+      });
+    } else {
+      alert('Error: ' + response.statusText);
+    }
+  });
 }
 
 function getWeatherData(city, coordinates) {
     var currentUrl = 'https://api.openweathermap.org/data/2.5/weather?lat='+ coordinates.lat +'&lon='+ coordinates.lon +'&appid='+ APIKEY +'&units=metric';
     var forecastUrl = 'https://api.openweathermap.org/data/2.5/forecast?lat='+ coordinates.lat +'&lon='+ coordinates.lon +'&appid='+ APIKEY +'&units=metric';
-    
-    fetch(currentUrl)
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (data) {
-        currentWeather = {
-          city: city,
-          date: dayjs().format('M/D/YYYY'), 
-          temp: data.main.temp,
-          humidity: data.main.humidity,
-          wind: data.wind.speed,
-          icon: data.weather[0].icon
-        }
-        createCurrentCard(currentWeather)
-      });
-    
-    
-    fetch(forecastUrl)
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (data) {
-        forecastData = data.list
-        for (var i = 0; i < forecastData.length; i++) {
-            if (forecastData[i].dt_txt.split(" ")[1] === '12:00:00'){
-              var weather = 
-                    {
-                        date: dayjs(forecastData[i].dt_txt.split(" ")[0]).format('M/D/YYYY'), 
-                        temp: forecastData[i].main.temp,
-                        humidity: forecastData[i].main.humidity,
-                        wind: forecastData[i].wind.speed,
-                        icon: forecastData[i].weather[0].icon
-                    };
-              createForecastCards(weather)
-            }
-        }
-      });
+    forecastTitle.text('5 Day Forecast').addClass('mt-3 text-left text-white')
+    fetch(currentUrl).then(function (response) {
+      if (response.ok) {
+        response.json().then(function (data) {
+          currentWeather = {
+            city: city,
+            date: dayjs().format('M/D/YYYY'), 
+            temp: data.main.temp,
+            humidity: data.main.humidity,
+            wind: data.wind.speed,
+            icon: data.weather[0].icon
+          }
+          createCurrentCard(currentWeather)
+        });
+      } else {
+        alert('Error: ' + response.statusText);
+      }
+    });
+     
+    fetch(forecastUrl).then(function (response) {
+      if (response.ok) {  
+        response.json().then(function (data) {
+          forecastData = data.list
+          for (var i = 0; i < forecastData.length; i++) {
+              if (forecastData[i].dt_txt.split(" ")[1] === '12:00:00'){
+                var weather = 
+                      {
+                          date: dayjs(forecastData[i].dt_txt.split(" ")[0]).format('M/D/YYYY'), 
+                          temp: forecastData[i].main.temp,
+                          humidity: forecastData[i].main.humidity,
+                          wind: forecastData[i].wind.speed,
+                          icon: forecastData[i].weather[0].icon
+                      };
+                createForecastCards(weather)
+              }
+          }
+        });
+      } else {
+        alert('Error: ' + response.statusText);
+      }
+    });
 }
 
 window.addEventListener("load", initSearches);
