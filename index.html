@@ -10,13 +10,16 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Solitreo&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/style.css" />
     <title>Document</title>
 </head>
 <body>
     <main class="min-vh-100 d-flex">
         <div class="w-100 row justify-content-center my-3">
-            <section class="col-12 col-lg-3 bg-info bg-gradient rounded mx-lg-3">
+            <section class="col-12 col-lg-3 bg-info bg-gradient rounded mx-lg-3 shadow border-top-0">
                 <div class="input-group input-group-lg my-3">
                     <input id="searchInput" type="text" class="form-control" placeholder="Enter Name of City" >
                     <button id ="searchButton" type="button" class="btn btn-outline-light">Search</button>
@@ -27,16 +30,16 @@
 
                 </ul>
             </section>
-            <section class="col-12 col-lg-8 bg-info bg-gradient rounded">
-                <h1 class="text-center text-white">Weather Dashboard</h1>
+            <section class="col-12 col-lg-8 bg-info bg-gradient rounded shadow border-top-0">
+                <h1 class="text-center text-white my-3">Weather Dashboard</h1>
                 <article id="currentWeather">
                     <div  id="current">
 
                     </div>
                 </article>
                 <article>
-                    <h2>5 Day Forecast</h2>
-                    <div  id="forecast"  class="d-flex flex-column flex-lg-row justify-content-evenly">
+                    <h2 id="forecastTitle" class="text-white mt-3"></h2>
+                    <div  id="forecast"  class="d-flex flex-column flex-lg-row justify-content-between">
 
                     </div>
                 </article>
