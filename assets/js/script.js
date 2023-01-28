@@ -3,6 +3,7 @@ var searchButton = $('#searchButton');
 var searchInput = $('#searchInput');
 var forecast = $('#forecast');
 var pastSearches = $('#pastSearches');
+var forecastTitle = $('#forecastTitle')
 var searches = [];
 
 function clearCards() {
@@ -12,12 +13,12 @@ function clearCards() {
 
 function createForecastCards(weather) {
     var cardEL = $('<div>');
-    cardEL.addClass('card text-white bg-info w-lg-25 m-2');
+    cardEL.addClass('card text-white bg-info my-2 px-3 shadow-lg');
     cardEL.appendTo(forecast);
     var cardName = $('<h5>').addClass('card-title').text(weather.date).css("padding","1rem");
     cardName.appendTo(cardEL);
     var cardImage = $('<img>')
-    cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png')
+    cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png').css({"width":"10rem", "height":"10rem"})
     cardImage.appendTo(cardEL);
     var cardBodyEL = $('<div>');
     cardBodyEL.addClass('card-body');
@@ -32,7 +33,7 @@ function createForecastCards(weather) {
 
 function createCurrentCard(weather){
   var cardEL = $('<div>');
-  cardEL.addClass('card text-white bg-info');;
+  cardEL.addClass('card text-white bg-info shadow');
   cardEL.appendTo(current);
   
   var cardName = $('<h2>').addClass('card-title').text(weather.city + " - " + weather.date).css("padding","1rem");
@@ -43,17 +44,17 @@ function createCurrentCard(weather){
   cardBodyEL.appendTo(cardEL);
 
   var cardImage = $('<img>')
-  cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png').css({"width":"20rem", "height":"15rem"});
+  cardImage.attr('src','http://openweathermap.org/img/wn/'+ weather.icon +'@2x.png').css({"width":"10rem", "height":"10rem"});
   cardImage.appendTo(cardBodyEL);
   
   var cardBodyText = $('<div>');
   cardBodyText.appendTo(cardBodyEL);
 
-  var cardComment = $('<p>').addClass('card-text fs-1').text('Temp: ' + weather.temp + '℃');
+  var cardComment = $('<p>').addClass('card-text fs-3').text('Temp: ' + weather.temp + '℃');
   cardComment.appendTo(cardBodyText);
-  var cardComment = $('<p>').addClass('card-text fs-1').text('Wind: ' + weather.wind + ' Meters/Sec');
+  var cardComment = $('<p>').addClass('card-text fs-3').text('Wind: ' + weather.wind + ' Meters/Sec');
   cardComment.appendTo(cardBodyText);
-  var cardComment = $('<p>').addClass('card-text fs-1').text('Humidity: ' + weather.humidity + '%');
+  var cardComment = $('<p>').addClass('card-text fs-3').text('Humidity: ' + weather.humidity + '%');
   cardComment.appendTo(cardBodyText);
 }
 
@@ -82,7 +83,7 @@ function createQuickSearchButton(search){
   pastSearchButton.text(search.city)
   pastSearchButton.attr('data-lat', search.coordinates.lat)
   pastSearchButton.attr('data-lon', search.coordinates.lon)
-  pastSearchButton.addClass('pastSearchButton');
+  pastSearchButton.addClass('pastSearchButton btn btn-warning btn-lg btn-block w-100 my-2 shadow');
   pastSearchButton.appendTo(pastSearch)
   pastSearch.appendTo(pastSearches)
 }
@@ -95,6 +96,7 @@ function startPastSearch(event){
 
 function startSearch(){
   clearCards()
+  forecastTitle.text('5 Day Forecast')
   var city = searchInput.val();
   var previousSearch = wasSearched(city)
   if (previousSearch){
@@ -141,7 +143,7 @@ function getWeatherData(city, coordinates) {
         createCurrentCard(currentWeather)
       });
     
-  
+    
     fetch(forecastUrl)
       .then(function (response) {
         return response.json();
