@@ -1,3 +1,4 @@
+/* adding Bebas Neue font from google fonts to entire page, generic sans serif for browsers that can't support */
 body {
     font-family: 'Bebas Neue', sans-serif;
 }
@@ -6,3 +7,9 @@ ul {
     padding: 0;
     list-style: none;
 }
+/* change background color to match the dashboard when screen gets smaller than 992px*/
+@media screen and (max-width: 992px) {
+    body {
+      background-color: #1dcef1;
+    }
+  }
