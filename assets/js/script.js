@@ -106,7 +106,7 @@ function wasSearched(city){
 
 function getCityCoordinates(city) {
   // This function calls the openweathermap's geolocation api to get the coordinates from the city name
-  var requestUrl = 'http://api.openweathermap.org/geo/1.0/direct?q='+ city +'&appid='+ APIKEY;
+  var requestUrl = 'https://api.openweathermap.org/geo/1.0/direct?q='+ city +'&appid='+ APIKEY;
   fetch(requestUrl).then(function (response) {
     if (response.ok) { // check response status === 200
       response.json().then(function (data) {
